@@ -95,7 +95,7 @@ def setup_toolbox(k, a, b, coordinates, dmax):
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("mate", tools.cxBlend, alpha=0.5)
     toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
-    toolbox.register("select", tools.selNSGA2)
+    toolbox.register("select", tools.selBest)
     toolbox.register("evaluate", evaluate, coordinates=coordinates, dmax=dmax)
     toolbox.decorate("mate", tools.DeltaPenalty(lambda ind: check_bounds(ind, a, b), float('inf')))
     toolbox.decorate("mutate", tools.DeltaPenalty(lambda ind: check_bounds(ind, a, b), float('inf')))
@@ -114,7 +114,7 @@ def run_evolution(toolbox, max_generations, max_no_improve_epochs, improvement_t
             ind.fitness.values = fit
 
         population[:] = toolbox.select(population + offspring, mu)
-        current_best_individual = tools.selBest(population, 1)[0]
+        current_best_individual = tools.selRandom(population, 1)[0]
         current_best = current_best_individual.fitness.values[0]
 
         if abs(best_fitness - current_best) > improvement_threshold:
@@ -125,12 +125,13 @@ def run_evolution(toolbox, max_generations, max_no_improve_epochs, improvement_t
 
         max_distance_history.append(best_fitness)
 
+        if gen % 10 == 0:
+            print(f"Generacja {gen + 1}, najlepszy wynik: {best_fitness}")
+
         if no_improve_counter >= max_no_improve_epochs:
             print(f"Algorytm zatrzymany po {gen + 1} epokach (brak znaczącej poprawy).")
             break
         
-        print(f"Generacja {gen + 1}, najlepszy wynik: {best_fitness}")
-
     return tools.selBest(population, 1)[0]
 
 def save_results(best_individual, outputFileName):
