@@ -111,7 +111,7 @@ def setup_toolbox(k, a, b, coordinates, dmax):
     creator.create("Individual", list, fitness=creator.FitnessMulti)
 
     toolbox = base.Toolbox()
-    toolbox.register("individual_near_teams", generate_near_teams, coordinates=coordinates, max_offset=10, k=k, a=a, b=b)
+    toolbox.register("individual_near_teams", generate_near_teams, coordinates=coordinates, max_offset=dmax, k=k, a=a, b=b)
     toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.individual_near_teams)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("mate", tools.cxBlend, alpha=0.5)
